@@ -96,56 +96,8 @@ var $socialWallGrid = $('.social-wall-grid'),
         if (typeof options.$data.data.items[i] != 'undefined') {
 
           var feed = options.$data.data.items[i],
-            $item = $(
-              '<a href="" class="stories__item rellax--stories" target="_blank" title=""> \
-                  <div class="stories__inner-wrapper"> \
-                    <div class="stories__text"> \
-                      <div> \
-                        <span class="fa" aria-hidden="true"></span> \
-                        <div class="stories__author"> </div> \
-                        <div class="stories__copy"> </div> \
-                      </div> \
-                    </div> \
-                  </div> \
-                </a>'
-            ),
-            // $item = $('<div class="grid-item"><div class="grid-wrap"><div class="box"></div></div></div>'),
-            source = feed.source,
-            feedID = feed.id,
-            permalink = feed.permalink,
-            date = new Date(parseInt(feed.date)),
-            text = urlify(feed.text),
-            media = feed.media || undefined,
-            user = feed.user,
-            avatar = user.avatar.replace('https', 'http'),
-            id = user.id,
-            userPermalink = user.permalink,
-            icon,
-            socialUrl
-          ;
-
-
-          // Se non è Google Plus e contiene foto
-          if (source != 'GP' && typeof media != 'undefined') {
-
-            // media
-            $item
-              .attr('href', permalink)
-              .attr('data-rellax-speed', (function () {
-                if (i === 1) { return 2; }
-                else { return .1 + (i / 10); }
-              }()))
-              .css('background-image', 'url(' + media.url + ')');
-
-            // author 
-            $('.stories__author', $item).text(id);
-
-            // text
-            $('.stories__copy', $item).text(text);
-
-            // source
-            $('.fa', $item).addClass('fa-' + (function () {
-              switch (source) {
+            source = (function () {
+              switch (feed.source) {
                 case 'PT':
                   return 'pinterest';
                   break;
@@ -159,18 +111,47 @@ var $socialWallGrid = $('.social-wall-grid'),
                   return 'twitter';
                   break;
               }
-            }()));
+            }()),
+            // feedID = feed.id,
+            // date = new Date(parseInt(feed.date)),
+            dataRellaxSpeed = (function () {
+              if (i === 1) { return 2; }
+              else { return .1 + (i / 10); }
+            }()),
+            text = urlify(feed.text),
+            media = feed.media || undefined,
+            user = feed.user,
+            avatar = user.avatar.replace('https', 'http'),
+            userPermalink = user.permalink,
+            icon,
+            socialUrl,
+            $item = $(
+              '<a href="' + feed.permalink + '" class="stories__item rellax--stories" target="_blank" title="" data-rellax-speed="' + dataRellaxSpeed + '" style="background-image:url(' + media.url + ')"> \
+                  <img src="' + media.url + '" alt="" title=""> \
+                  <div class="stories__inner-wrapper"> \
+                    <div class="stories__text"> \
+                      <div> \
+                        <span class="fa fa-' + source + '" aria-hidden="true"></span> \
+                        <div class="stories__author my-2">' + user.id + '</div> \
+                        <div class="stories__copy">' + text + '</div> \
+                      </div> \
+                    </div> \
+                  </div> \
+                </a>'
+            )
+            // $item = $('<div class="grid-item"><div class="grid-wrap"><div class="box"></div></div></div>'),
+           
+          ;
+
+
+          // Se non è Google Plus e contiene foto
+          if (source != 'GP' && typeof media != 'undefined') {
+            
 
             // append
             $item.appendTo(elem);
 
-            if (options.withMasonry === 'true') {
-              $wall.masonry('appended', $item);
-              $wall.imagesLoaded().progress(function () {
-                $wall.masonry('layout');
-              });
-            }
-
+            
             options.currentFeed++;
 
           } else {
@@ -207,96 +188,63 @@ var $socialWallGrid = $('.social-wall-grid'),
 
     alladececcoGrid: function (elem, options) {
       
-            if (options.$data.data.items.length < options.maxFeed) {
-              options.maxFeed = options.$data.data.items.length;
-              options.tooManyFeeds = true;
-            }
-      
-            for (i = options.currentFeed; i < options.maxFeed; i++) {
-      
-              if (typeof options.$data.data.items[i] != 'undefined') {
-      
-                var feed = options.$data.data.items[i],
-                  $item = $(
-                    '<a href="" class="alladececco__post col-4" title="" target="_blank">  \
-                      <div class="alladececco__post__image mb-3"></div> \
-                      <h4 class="alladececco__post__author mb-3"> \
-                        <img src="" alt=""> \
-                        <strong>Marta magliani</strong> \
-                      </h4>	 \
-                      <div class="alladececco__post__copy"></div> \
-                    </a>'
-                  ),
-                  
-                  source = feed.source,
-                  feedID = feed.id,
-                  permalink = feed.permalink,
-                  date = new Date(parseInt(feed.date)),
-                  text = urlify(feed.text),
-                  media = feed.media || undefined,
-                  user = feed.user,
-                  avatar = user.avatar.replace('https', 'http'),
-                  id = user.id,
-                  userPermalink = user.permalink,
-                  icon,
-                  socialUrl
-                ;
-      
-      
-                // Se non è Google Plus e contiene foto
-                if (source != 'GP' && typeof media != 'undefined') {
-      
-                  // Link
-                  $item.attr('href', permalink);
+      if (options.$data.data.items.length < options.maxFeed) {
+        options.maxFeed = options.$data.data.items.length;
+        options.tooManyFeeds = true;
+      }
 
-                  // image
-                  $('.alladececco__post__image', $item).css('background-image', 'url(' + media.url + ')');
+      for (i = options.currentFeed; i < options.maxFeed; i++) {
 
-                  // author avatar
-                  $('.alladececco__post__author img', $item).attr('src', avatar);     
-                  
+        if (typeof options.$data.data.items[i] != 'undefined') {
 
-                  // author name
-                  $('.alladececco__post__author strong', $item).text(id);
-      
-                  // text
-                  $('.alladececco__post__copy', $item).text(text);
-      
-                  // source
-                  $('.fa', $item).addClass('fa-' + (function () {
-                    switch (source) {
-                      case 'PT':
-                        return 'pinterest';
-                        break;
-                      case 'IG':
-                        return 'instagram';
-                        break;
-                      case 'FB':
-                        return 'facebook';
-                        break;
-                      case 'TW':
-                        return 'twitter';
-                        break;
-                    }
-                  }()));
-      
-                  // append
-                  $item.appendTo(elem);
-      
-                  options.currentFeed++;
-      
-                } else {
-                  if (!options.tooManyFeeds) {
-                    options.maxFeed++;
-                  }
-                }
-      
-              }
-            }
-                
+          var feed = options.$data.data.items[i],
+              source = feed.source,
+              feedID = feed.id,
+              permalink = feed.permalink,
+              date = new Date(parseInt(feed.date)),
+              text = urlify(feed.text),
+              media = feed.media || undefined,
+              user = feed.user,
+              avatar = user.avatar.replace('https', 'http'),
+              userPermalink = user.permalink,
+              icon,
+              socialUrl,
+              
+              $item = $(
+                '<a href="' + permalink + '" class="alladececco__post col-sm-4 mb-5 mb-md-0" title="" target="_blank">  \
+                  <div class="alladececco__post__image mb-3" style="background-image: url(' + media.url + ')"></div> \
+                  <h4 class="alladececco__post__author mb-3"> \
+                    <img src="' + avatar + '" alt=""> \
+                    <strong>' + user.id + '</strong> \
+                  </h4>	 \
+                  <div class="alladececco__post__copy">' + text + '</div> \
+                </a>'
+              )
             
+            
+          ;
+
+
+          // Se non è Google Plus e contiene foto
+          if (source != 'GP' && typeof media != 'undefined') {    
+            
+            // append
+            $item.appendTo(elem);
+
+            options.currentFeed++;
+
+          } else {
+            if (!options.tooManyFeeds) {
+              options.maxFeed++;
+            }
+          }
+
+        }
+      }
+          
       
-          },
+
+    },
 
     masonry: function (elem, selector) {
       var $wall = $(elem).masonry({
